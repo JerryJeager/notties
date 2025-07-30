@@ -1,61 +1,67 @@
-import { Link } from "expo-router";
 import {
   View,
   Text,
   TextInput,
   ScrollView,
+  Pressable,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
 } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { v4 as uuidv4 } from "uuid";
-import { NoteType } from "./(tabs)";
 import { getData, storeData } from "@/utils/store";
-import "react-native-get-random-values";
+import { NoteType } from "../(tabs)";
+import { useNavigation } from "@react-navigation/native";
 
-const CreateNoteScreen = () => {
-  const date = new Date();
-  const dateString = `${date.getDate()}-${
-    date.getMonth() + 1
-  }-${date.getFullYear()}`;
+const ViewNoteScreen = () => {
+  const { id } = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [dateString, setDateString] = useState("");
+  const [allNotes, setAllNotes] = useState<NoteType[] | null>(null);
   const navigation = useNavigation<any>();
+  useEffect(() => {
+    const getAllNotes = async () => {
+      const allNotes = await getData("notties/notes");
+      if (allNotes != null) {
+        let data = JSON.parse(allNotes);
+        if (Array.isArray(data)) {
+          const note = data.filter((d) => d?.id == id);
+          setTitle(note[0]?.title);
+          setBody(note[0]?.body);
+          setDateString(note[0]?.created_at);
+          setAllNotes(data);
+        }
+      }
+    };
+
+    getAllNotes();
+  }, []);
 
   const saveNote = async (value: NoteType) => {
-    const allNotes = await getData("notties/notes");
-    if (allNotes == null) {
-      let data: any = [value];
-    //   console.log(data);
-      data = JSON.stringify(data);
-      await storeData("notties/notes", data);
-    } else {
-      const notes = JSON.parse(allNotes);
-      if (Array.isArray(notes)) {
-        notes.push(value);
+    if (allNotes != null && (title.trim() || body.trim())) {
+      const notes = [...allNotes];
+      const noteIdx = notes?.findIndex((n) => n?.id == id);
+      if (noteIdx != -1) {
+        notes[noteIdx] = value;
+        console.log(notes);
+
         await storeData("notties/notes", JSON.stringify(notes));
-      } else {
-        console.error("Stored value is not an array; resetting notes.");
-        const data = [value];
-        await storeData("notties/notes", JSON.stringify(data));
       }
     }
-    // console.log("saved");
   };
 
   const handleGoBack = async () => {
     if (title.trim() || body.trim()) {
       const data: NoteType = {
-        id: uuidv4(),
+        id: typeof id === "string" ? id : id[0],
         body: body,
         title: title,
         created_at: dateString,
       };
-    //   console.log(data);
+      console.log(data);
       await saveNote(data);
     }
     navigation.navigate("(tabs)");
@@ -65,12 +71,12 @@ const CreateNoteScreen = () => {
     const unsubscribe = navigation.addListener("beforeRemove", () => {
       if (title.trim() || body.trim()) {
         const data: NoteType = {
-          id: uuidv4(),
+          id: typeof id === "string" ? id : id[0],
           body: body,
           title: title,
           created_at: dateString,
         };
-        // console.log(data);
+        console.log(data);
         saveNote(data);
       }
     });
@@ -127,4 +133,4 @@ const CreateNoteScreen = () => {
   );
 };
 
-export default CreateNoteScreen;
+export default ViewNoteScreen;
