@@ -1,6 +1,7 @@
 import { View, Text, FlatList } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import NoteCards, { NoteCardType } from "@/components/Notes/NoteCards";
+import { Link } from "expo-router";
 
 const NoteScreen = () => {
   const folders: string[] = [
@@ -70,9 +71,9 @@ const NoteScreen = () => {
         />
       </View>
 
-      <View className="p-3 rounded-full bg-primary w-fit absolute bottom-24 right-[20]">
+      <Link href="/create-note" className="p-3 rounded-full bg-primary w-fit absolute bottom-24 right-[20]">
         <MaterialIcons name="add" size={24} color="white"/>
-      </View>
+      </Link>
     </View>
   );
 };

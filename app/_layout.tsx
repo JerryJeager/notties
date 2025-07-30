@@ -1,17 +1,13 @@
-import {  View } from "react-native";
+import { View, SafeAreaView, Platform } from "react-native";
 import "./global.css";
-import { Slot, Stack } from "expo-router";
-import {StatusBar} from "expo-status-bar"
+import { Slot } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
 export default function RootLayout() {
   return (
-    <>
-      {/* <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack> */}
-      <View className="pb-8 bg-black"/>
+    <View className="pt-6" style={{ flex: 1, backgroundColor: "#000" }}>
+      <StatusBar style="light" />
       <Slot />
-      <StatusBar style="dark"/>
-    </>
+    </View>
   );
 }
