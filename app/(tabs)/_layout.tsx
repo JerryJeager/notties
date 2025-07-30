@@ -3,7 +3,7 @@ import { Text, View } from "react-native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import NoteScreen from ".";
 import TodoScreen from "./todo";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -26,8 +26,8 @@ const Layout = () => {
           title: "Home",
           tabBarShowLabel: false,
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "book" : "book-outline"}
+            <MaterialIcons
+              name={focused ? "book" : "book"}
               color={color}
               size={24}
             />

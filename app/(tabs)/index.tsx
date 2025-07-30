@@ -2,6 +2,15 @@ import { View, Text, FlatList } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import NoteCards, { NoteCardType } from "@/components/Notes/NoteCards";
 import { Link } from "expo-router";
+import { useEffect, useState } from "react";
+import { getData } from "@/utils/store";
+
+export type NoteType = {
+  id: string;
+  title: string;
+  body: string;
+  created_at: string;
+};
 
 const NoteScreen = () => {
   const folders: string[] = [
@@ -42,6 +51,22 @@ const NoteScreen = () => {
     },
   ];
 
+  const [allNotes, setAllNotes] = useState<NoteType[] | null>(null);
+
+  useEffect(() => {
+    const getAllNotes = async () => {
+      const allNotes = await getData("notties/notes");
+      if (allNotes != null) {
+        let data = JSON.parse(allNotes);
+        if (Array.isArray(data)) {
+          setAllNotes(data);
+        }
+      }
+    };
+
+    getAllNotes();
+  }, []);
+
   return (
     <View className="bg-black px-6 pb-6 flex-1">
       <View className="gap-4 flex-row">
@@ -64,15 +89,31 @@ const NoteScreen = () => {
           <MaterialIcons name="folder" size={20} color="#ffd33d" />
         </View>
       </View>
-      <View className="mt-4">
-        <FlatList
-          data={notecards}
-          renderItem={({ item, index }) => <NoteCards key={index} {...item} />}
-        />
+      <View className="mt-4 pb-6">
+        {allNotes && allNotes?.length > 0 ? (
+          <FlatList
+            data={allNotes.reverse()}
+            renderItem={({ item, index }) => (
+              <NoteCards
+                key={index}
+                body={item.body}
+                created_at={item.created_at}
+                title={item.title}
+              />
+            )}
+          />
+        ) : (
+          <Text className="text-center text-white">
+            You've not added any notes yet
+          </Text>
+        )}
       </View>
 
-      <Link href="/create-note" className="p-3 rounded-full bg-primary w-fit absolute bottom-24 right-[20]">
-        <MaterialIcons name="add" size={24} color="white"/>
+      <Link
+        href="/create-note"
+        className="p-3 rounded-full bg-primary w-fit absolute bottom-24 right-[20]"
+      >
+        <MaterialIcons name="add" size={24} color="white" />
       </Link>
     </View>
   );
