@@ -30,7 +30,7 @@ const CreateNoteScreen = () => {
     const allNotes = await getData("notties/notes");
     if (allNotes == null) {
       let data: any = [value];
-    //   console.log(data);
+      //   console.log(data);
       data = JSON.stringify(data);
       await storeData("notties/notes", data);
     } else {
@@ -55,25 +55,31 @@ const CreateNoteScreen = () => {
         title: title,
         created_at: dateString,
       };
-    //   console.log(data);
+      //   console.log(data);
       await saveNote(data);
     }
     navigation.navigate("(tabs)");
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener("beforeRemove", () => {
-      if (title.trim() || body.trim()) {
-        const data: NoteType = {
-          id: uuidv4(),
-          body: body,
-          title: title,
-          created_at: dateString,
-        };
-        // console.log(data);
-        saveNote(data);
+    const unsubscribe = navigation.addListener(
+      "beforeRemove",
+      async (e: any) => {
+        if (title.trim() || body.trim()) {
+          e.preventDefault();
+          const data: NoteType = {
+            id: uuidv4(),
+            body: body,
+            title: title,
+            created_at: dateString,
+          };
+          console.log(data);
+          await saveNote(data);
+        //   console.log("saved via back");
+          navigation.dispatch(e.data.action);
+        }
       }
-    });
+    );
     return unsubscribe;
   }, [navigation, title, body]);
 

@@ -61,7 +61,7 @@ const NoteScreen = () => {
           <MaterialIcons name="folder" size={20} color="#ffd33d" />
         </View>
       </View>
-      <View className="mt-4 pb-6">
+      <View className="mt-4 pb-6 flex-1">
         {allNotes && allNotes?.length > 0 ? (
           <FlatList
             data={allNotes.reverse()}
@@ -76,9 +76,11 @@ const NoteScreen = () => {
             )}
           />
         ) : (
-          <Text className="text-center text-white">
-            You've not added any notes yet
-          </Text>
+          <View className="flex-1 justify-center items-center">
+            <Text className="text-center  text-white text-xl">
+              You've not added any notes yet
+            </Text>
+          </View>
         )}
       </View>
 

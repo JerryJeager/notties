@@ -6,6 +6,7 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
+  Modal,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -20,6 +21,7 @@ const ViewNoteScreen = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [dateString, setDateString] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [allNotes, setAllNotes] = useState<NoteType[] | null>(null);
   const navigation = useNavigation<any>();
   useEffect(() => {
@@ -61,10 +63,18 @@ const ViewNoteScreen = () => {
         title: title,
         created_at: dateString,
       };
-      console.log(data);
+      // console.log(data);
       await saveNote(data);
     }
     navigation.navigate("(tabs)");
+  };
+
+  const handleDelete = async () => {
+    if (allNotes != null) {
+      const newNotes = allNotes.filter((n) => n.id != id);
+      await storeData("notties/notes", JSON.stringify(newNotes));
+      navigation.navigate("(tabs)");
+    }
   };
 
   useEffect(() => {
@@ -90,9 +100,13 @@ const ViewNoteScreen = () => {
       style={{ flex: 1, backgroundColor: "#000" }}
       className="p-6"
     >
-      <View className="pb-4">
+      <View className="pb-4 flex-row justify-between w-full">
         <Pressable onPress={handleGoBack}>
           <MaterialIcons name="arrow-back" size={24} color="#fff" />
+        </Pressable>
+
+        <Pressable onPress={() => setIsModalOpen(true)}>
+          <MaterialIcons name="delete" size={24} color="red" />
         </Pressable>
       </View>
 
@@ -129,6 +143,42 @@ const ViewNoteScreen = () => {
           />
         </View>
       </ScrollView>
+      <Modal visible={isModalOpen} animationType="slide" transparent={true}>
+        <View
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 180,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            backgroundColor: "#25292e",
+            padding: 16,
+            marginHorizontal: 0,
+          }}
+        >
+          <Text className="text-center font-semibold text-white text-xl">
+            Delete Notes
+          </Text>
+          <Text className="text-center text-white mt-3">delete this note</Text>
+
+          <View className="flex-row gap-5 items-center justify-center mt-4 w-full">
+            <Pressable
+              onPress={() => setIsModalOpen(false)}
+              className="rounded-full py-5 w-1/2 bg-gray-950"
+            >
+              <Text className="text-slate-400 text-center">Cancel</Text>
+            </Pressable>
+            <Pressable
+              onPress={handleDelete}
+              className="rounded-full w-1/2 py-5 bg-gray-950"
+            >
+              <Text className="text-red-700 text-center">Delete</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
