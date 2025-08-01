@@ -144,40 +144,45 @@ const ViewNoteScreen = () => {
         </View>
       </ScrollView>
       <Modal visible={isModalOpen} animationType="slide" transparent={true}>
-        <View
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: 180,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            backgroundColor: "#25292e",
-            padding: 16,
-            marginHorizontal: 0,
-          }}
-        >
-          <Text className="text-center font-semibold text-white text-xl">
-            Delete Notes
-          </Text>
-          <Text className="text-center text-white mt-3">delete this note</Text>
+        <Pressable onPress={() => setIsModalOpen(false)} style={{ flex: 1 }}>
+          <View
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: 180,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              backgroundColor: "#25292e",
+              padding: 16,
+              marginHorizontal: 0,
+            }}
+            onStartShouldSetResponder={() => true}
+          >
+            <Text className="text-center font-semibold text-white text-xl">
+              Delete Notes
+            </Text>
+            <Text className="text-center text-white mt-3">
+              delete this note
+            </Text>
 
-          <View className="flex-row gap-5 items-center justify-center mt-4 w-full">
-            <Pressable
-              onPress={() => setIsModalOpen(false)}
-              className="rounded-full py-5 w-1/2 bg-gray-950"
-            >
-              <Text className="text-slate-400 text-center">Cancel</Text>
-            </Pressable>
-            <Pressable
-              onPress={handleDelete}
-              className="rounded-full w-1/2 py-5 bg-gray-950"
-            >
-              <Text className="text-red-700 text-center">Delete</Text>
-            </Pressable>
+            <View className="flex-row gap-5 items-center justify-center mt-4 w-full">
+              <Pressable
+                onPress={() => setIsModalOpen(false)}
+                className="rounded-full py-5 w-1/2 bg-gray-950"
+              >
+                <Text className="text-slate-400 text-center">Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleDelete}
+                className="rounded-full w-1/2 py-5 bg-gray-950"
+              >
+                <Text className="text-red-700 text-center">Delete</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
+        </Pressable>
       </Modal>
     </KeyboardAvoidingView>
   );
